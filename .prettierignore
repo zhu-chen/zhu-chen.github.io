@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.astro/
+coverage/
+playwright-report/
+test-results/
+package-lock.json
+
+# Existing documentation and work records have their own formatting conventions.
+docs/
+.agents/
+AGENTS.md
