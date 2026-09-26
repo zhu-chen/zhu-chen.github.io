@@ -55,10 +55,14 @@ npm run verify
 
 当前开发文档从 [docs/AGENTS.md](docs/AGENTS.md) 逐级查阅。
 
-## 构建与 CI
+## CI 与自动部署
 
 提交 `package-lock.json`，在新环境使用 `npm ci` 安装一致的依赖。`node_modules/`、`dist/`、`.astro/`、本地环境文件和测试产物均由 Git 忽略。
 
-GitHub Actions 执行格式检查、类型检查、构建和 Chromium 测试。当前工作流负责验证，发布流程待部署阶段补充。
+[CI and Deploy](https://github.com/zhu-chen/zhu-chen.github.io/actions/workflows/ci.yml) 在推送、Pull Request 和手动触发时执行格式检查、类型检查、构建和 Chromium 测试。
+
+推送到 `main` 后，检查全部通过才会将 `dist/` 自动部署到 [zhu-chen.github.io](https://zhu-chen.github.io)。其他分支和 Pull Request 仅验证；也可以在 Actions 中选择 `main` 手动运行工作流以重新部署。构建或测试失败时保留上一次成功发布的网站。
+
+首次启用需在仓库 Settings → Pages → Build and deployment 中将 Source 设为 **GitHub Actions**，无需添加部署密钥。详细流程和排查入口见 [部署文档](docs/development/deployment.md)。
 
 Astro 按个人站点 `https://zhu-chen.github.io` 配置静态输出，构建目录为 `dist/`。使用其他域名或项目子路径时，需要同步调整 `astro.config.mjs` 与资源链接。
