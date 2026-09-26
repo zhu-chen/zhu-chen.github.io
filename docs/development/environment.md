@@ -4,7 +4,7 @@
 
 项目 .npmrc 固定使用 npm 官方仓库，package-lock.json 中的下载地址与之保持一致，避免开发机的全局镜像配置影响 CI。依赖通过 package-lock.json 锁定；新环境使用 npm ci，新增或升级依赖时同步提交锁文件。当前 Astro 类型检查器声明支持 TypeScript 5/6，因此选用兼容的 TypeScript 6，而非直接追随 TypeScript 最新主版本。[Astro 类型检查说明](https://docs.astro.build/en/guides/typescript/)
 
-Astro 使用静态输出，xterm.js 只在浏览器脚本中初始化。当前首页包含静态占位内容和只读终端预览，验证终端显示与容器尺寸适配；具体命令、输入历史和正式页面行为尚待 Spec 确定。终端加载前或禁用 JavaScript 时，静态内容仍可阅读。
+Astro 使用静态输出，xterm.js 只在浏览器脚本中初始化。当前首页提供八个基本命令、目录浏览和内存中的命令历史；xterm 展示输出，原生输入框负责编辑和中文输入。命令与静态内容共用 src/data/homepage.ts，关闭 JavaScript 时内容仍可阅读。具体行为见 [终端基本命令](../specs/terminal-commands.md)。个人介绍、项目和论文内容仍待补全。
 
 验证入口：
 

@@ -9,6 +9,17 @@ test.describe('without JavaScript', () => {
     await expect(page.getByRole('heading', { name: 'zhu-chen' })).toBeVisible();
     await expect(page.getByText('欢迎来到我的主页。')).toBeVisible();
     await expect(page.locator('[data-terminal-screen]')).toBeHidden();
+    await expect(
+      page.getByRole('textbox', { name: '命令', exact: true }),
+    ).toBeHidden();
+    await page
+      .getByRole('navigation', { name: '主页内容' })
+      .getByRole('link', { name: '联系与链接' })
+      .click();
+    await expect(page).toHaveURL(/#contact$/);
+    await expect(
+      page.getByRole('link', { name: 'GitHub', exact: true }),
+    ).toBeVisible();
   });
 });
 
@@ -27,7 +38,13 @@ test('terminal renders, fits the viewport and raises no runtime errors', async (
   await expect(page.locator('.xterm-accessibility-tree')).toContainText(
     'Welcome to my homepage.',
   );
-  await page.screenshot({ path: testInfo.outputPath('homepage.png') });
+  await expect(
+    page.getByRole('textbox', { name: '命令', exact: true }),
+  ).toBeInViewport({ ratio: 1 });
+  await page.screenshot({
+    path: testInfo.outputPath('homepage.png'),
+    fullPage: true,
+  });
 
   for (const width of [390, 360, 1024]) {
     await page.setViewportSize({ width, height: 800 });

@@ -23,3 +23,6 @@ Thumbs.db
 .idea/
 *.swp
 *.swo
+
+# Source modules must remain trackable even when a global rule ignores lib/.
+!/src/lib/

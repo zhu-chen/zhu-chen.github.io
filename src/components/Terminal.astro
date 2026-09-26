@@ -1,0 +1,134 @@
+---
+import '@xterm/xterm/css/xterm.css';
+---
+
+<section class="terminal-panel" aria-labelledby="terminal-title">
+  <h2 id="terminal-title">~/terminal</h2>
+  <homepage-terminal>
+    <div class="terminal-screen" data-terminal-screen hidden></div>
+    <p data-terminal-fallback>欢迎来到我的主页。</p>
+    <div data-terminal-controls hidden>
+      <form class="command-form" aria-label="运行主页命令">
+        <label class="sr-only" for="terminal-command">
+          命令
+        </label>
+        <span class="prompt" aria-hidden="true">
+          <span data-terminal-path>~</span> $
+        </span>
+        <input
+          id="terminal-command"
+          name="command"
+          type="text"
+          maxlength="256"
+          autocomplete="off"
+          autocapitalize="off"
+          spellcheck="false"
+          enterkeyhint="send"
+          aria-describedby="terminal-hint"
+          placeholder="输入 help 开始"
+        />
+        <button type="submit">执行</button>
+      </form>
+      <div class="command-actions" aria-label="常用命令">
+        <button type="button" data-command="help">
+          help
+        </button>
+        <button type="button" data-command="ls">
+          ls
+        </button>
+        <button type="button" data-command="cd ~">
+          回到根目录
+        </button>
+        <button type="button" data-command="clear">
+          清屏
+        </button>
+      </div>
+      <p id="terminal-hint">Enter 执行 · ↑ ↓ 历史命令 · 也可直接浏览下方内容</p>
+    </div>
+  </homepage-terminal>
+</section>
+
+<script>
+  import '../scripts/terminal';
+</script>
+
+<style>
+  .terminal-panel {
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    overflow: hidden;
+  }
+  h2 {
+    margin: 0;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 0.875rem;
+    font-weight: 400;
+  }
+  homepage-terminal {
+    display: block;
+    padding: 1rem;
+  }
+  .terminal-screen {
+    height: clamp(12rem, 30vh, 18rem);
+    min-width: 0;
+  }
+  [data-terminal-fallback] {
+    margin: 0;
+  }
+  .command-form {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    border-top: 1px solid var(--border);
+    padding-top: 0.75rem;
+    margin-top: 0.75rem;
+  }
+  .prompt {
+    color: var(--accent);
+    flex: 0 1 auto;
+    max-width: 45%;
+    overflow-wrap: anywhere;
+  }
+  input {
+    min-width: 0;
+    width: 100%;
+    flex: 1;
+    background: transparent;
+    color: var(--foreground);
+    border: 1px solid var(--border);
+    border-radius: 0.25rem;
+    padding: 0.5rem;
+    font: inherit;
+    font-size: 1rem;
+  }
+  input::placeholder {
+    color: var(--muted);
+  }
+  button {
+    flex-shrink: 0;
+    min-height: 2.75rem;
+    padding: 0.4rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 0.25rem;
+    background: transparent;
+    color: var(--accent);
+    font: inherit;
+    cursor: pointer;
+  }
+  button:hover {
+    border-color: var(--accent);
+  }
+  .command-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+  }
+  #terminal-hint {
+    margin: 0.75rem 0 0;
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+</style>

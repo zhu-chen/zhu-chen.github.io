@@ -2,7 +2,15 @@
 
 采用 **Astro + TypeScript + xterm.js** 的个人学术主页，目标部署平台为 GitHub Pages。
 
-当前是可运行的项目骨架：静态首页和只读终端预览用于验证技术栈接入。正式内容、页面布局与命令交互将按后续规范实现。
+当前已实现基本命令浏览，也可通过页面链接直接阅读相同内容。个人介绍、项目和论文资料仍在整理中。
+
+## 主页命令
+
+支持 `ls`、`cd`、`help`、`pwd`、`cat`、`clear`、`whoami`、`history`。
+
+例如依次输入 `ls` → `cd about` → `cat README.txt`；`cd ..` 返回上级，`cd ~` 回到根目录。输入 `help` 查看全部命令，`help cd` 查看具体用法。
+
+Enter 执行，↑ / ↓ 切换历史命令；历史仅保留最近 50 条，刷新后清空。`clear` 清屏但保留当前位置和历史。页面按钮与内容链接也可直接使用。完整约定见 [终端命令规范](docs/specs/terminal-commands.md)。
 
 ## 本地开发
 
@@ -41,7 +49,7 @@ npm run test:install
 npm run verify
 ```
 
-测试涵盖无 JavaScript 的基础访问、xterm.js 渲染、视口适配和运行时错误。移动设备使用 Chromium 模拟，不代替真实手机测试。
+测试涵盖命令及路径行为、输入和历史导航、无 JavaScript 的基础访问、xterm.js 渲染、视口适配和运行时错误。移动设备使用 Chromium 模拟，不代替真实手机测试。
 
 ## 项目目录
 
@@ -49,6 +57,8 @@ npm run verify
 - `src/layouts/`：页面布局。
 - `src/components/`：Astro 组件。
 - `src/scripts/`：浏览器端 TypeScript。
+- `src/lib/`：命令解析与内容目录导航。
+- `src/data/`：页面与终端共用的主页内容。
 - `src/styles/`：全局样式。
 - `public/`：原样复制的静态资源。
 - `tests/`：浏览器冒烟测试。

@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import TerminalPreview from '../components/TerminalPreview.astro';
+import Terminal from '../components/Terminal.astro';
+import { sections } from '../data/homepage';
 ---
 
 <BaseLayout title="zhu-chen | 个人主页">
@@ -9,5 +10,26 @@ import TerminalPreview from '../components/TerminalPreview.astro';
     <h1>zhu-chen</h1>
     <p>个人学术主页 · 内容整理中</p>
   </header>
-  <TerminalPreview />
+  <nav class="content-nav" aria-label="主页内容">
+    {sections.map((section) => (
+      <a href={`#${section.id}`}>{section.title}</a>
+    ))}
+  </nav>
+  <Terminal />
+  <div class="site-content">
+    {sections.map((section) => (
+      <section id={section.id} aria-labelledby={`${section.id}-title`}>
+        <p class="eyebrow">~/{section.id}</p>
+        <h2 id={`${section.id}-title`}>{section.title}</h2>
+        {section.lines.map((line) => (
+          <p>{line}</p>
+        ))}
+        {section.links?.map((link) => (
+          <p>
+            <a href={link.href}>{link.label}</a>
+          </p>
+        ))}
+      </section>
+    ))}
+  </div>
 </BaseLayout>

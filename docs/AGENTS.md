@@ -4,6 +4,7 @@
 
 - [项目设计意图](./intend.md)：项目目标、核心体验与长期原则。
 - [技术决策](./decisions/AGENTS.md)：当前有效的技术选型与架构决策。
+- [交互规范](./specs/AGENTS.md)：当前页面行为与终端命令约定。
 - [开发环境](./development/AGENTS.md)：项目初始化、运行与验证方式。
 - [设计参考](./refs/AGENTS.md)：当前仍有参考价值的网站与源码。
 
