@@ -9,10 +9,11 @@ class HomepageTerminal extends HTMLElement {
 
   connectedCallback() {
     const screen = this.querySelector<HTMLElement>('[data-terminal-screen]');
+    const surface = this.querySelector<HTMLElement>('[data-terminal-surface]');
     const fallback = this.querySelector<HTMLElement>(
       '[data-terminal-fallback]',
     );
-    const controls = this.querySelector<HTMLElement>(
+    const controls = this.querySelectorAll<HTMLElement>(
       '[data-terminal-controls]',
     );
     const form = this.querySelector<HTMLFormElement>('form');
@@ -20,8 +21,9 @@ class HomepageTerminal extends HTMLElement {
     const path = this.querySelector<HTMLElement>('[data-terminal-path]');
     if (
       !screen ||
+      !surface ||
       !fallback ||
-      !controls ||
+      !controls.length ||
       !form ||
       !input ||
       !path ||
@@ -35,6 +37,8 @@ class HomepageTerminal extends HTMLElement {
     let historyIndex = 0;
     let draft = '';
     let composing = false;
+    let ready = false;
+    const styles = getComputedStyle(this);
     const terminal = new Terminal({
       rows: 16,
       disableStdin: true,
@@ -42,12 +46,13 @@ class HomepageTerminal extends HTMLElement {
       cursorInactiveStyle: 'none',
       screenReaderMode: true,
       scrollback: 500,
-      fontSize: 14,
-      fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace',
+      fontSize: 16,
+      lineHeight: 1.4,
+      fontFamily: styles.fontFamily,
       theme: {
-        background: '#11171b',
-        foreground: '#dce7e3',
-        cursor: '#8ed6b0',
+        background: styles.getPropertyValue('--background').trim(),
+        foreground: styles.getPropertyValue('--foreground').trim(),
+        cursor: styles.getPropertyValue('--accent').trim(),
       },
     });
     const fit = new FitAddon();
@@ -59,8 +64,30 @@ class HomepageTerminal extends HTMLElement {
     terminal.open(screen);
     fit.fit();
 
-    // Native input handles editing, selection, IME and mobile keyboards.
-    // Output must not trap Tab or browser shortcuts or open a second keyboard.
+    // Every output ends with CRLF, leaving the cursor's row for native editing.
+    // Clip unused rows instead of placing a separate form below a blank screen.
+    const syncPrompt = () => {
+      if (!ready || signal.aborted) return;
+      const renderedScreen = screen.querySelector<HTMLElement>('.xterm-screen');
+      if (!renderedScreen) return;
+      const { height, width } = renderedScreen.getBoundingClientRect();
+      const rowHeight = height / terminal.rows;
+      const buffer = terminal.buffer.active;
+      surface.style.height = `${(buffer.cursorY + 1) * rowHeight}px`;
+      surface.style.setProperty(
+        '--prompt-top',
+        `${buffer.cursorY * rowHeight}px`,
+      );
+      surface.style.setProperty('--terminal-row-height', `${rowHeight}px`);
+      surface.style.setProperty('--terminal-width', `${width}px`);
+      // The live prompt must not cover old output when browsing scrollback.
+      form.hidden = buffer.viewportY !== buffer.baseY;
+    };
+    terminal.onRender(syncPrompt);
+    terminal.onScroll(syncPrompt);
+
+    // Keep browser editing, selection, IME and mobile keyboards on the native
+    // editor embedded at the terminal cursor; output never traps focus or Tab.
     terminal.attachCustomKeyEventHandler(() => false);
     if (terminal.textarea) {
       terminal.textarea.readOnly = true;
@@ -72,7 +99,9 @@ class HomepageTerminal extends HTMLElement {
       () => {
         if (signal.aborted) return;
         fallback.hidden = true;
-        controls.hidden = false;
+        ready = true;
+        for (const control of controls) control.hidden = false;
+        syncPrompt();
       },
     );
 
@@ -81,14 +110,16 @@ class HomepageTerminal extends HTMLElement {
       const result = session.execute(command);
       if (result.clear) {
         // Queue the clear with writes so rapid consecutive commands stay ordered.
-        terminal.write('\x1b[2J\x1b[3J\x1b[H');
+        terminal.write('\x1b[2J\x1b[3J\x1b[H', syncPrompt);
       } else if (result.command || result.lines.length) {
         const lines = [
           ...(result.command ? [prompt + result.command] : []),
           ...result.lines,
         ];
         terminal.write(lines.map(plainText).join('\r\n') + '\r\n', () => {
-          if (!signal.aborted) terminal.scrollToBottom();
+          if (signal.aborted) return;
+          terminal.scrollToBottom();
+          syncPrompt();
         });
       }
       path.textContent = displayPath(session.cwd);
@@ -97,6 +128,10 @@ class HomepageTerminal extends HTMLElement {
       historyIndex = session.history.length;
     };
 
+    form.addEventListener('click', () => input.focus(), { signal });
+    input.addEventListener('focus', () => terminal.scrollToBottom(), {
+      signal,
+    });
     form.addEventListener(
       'submit',
       (event) => {
@@ -150,7 +185,10 @@ class HomepageTerminal extends HTMLElement {
       );
     }
 
-    this.observer = new ResizeObserver(() => fit.fit());
+    this.observer = new ResizeObserver(() => {
+      fit.fit();
+      syncPrompt();
+    });
     this.observer.observe(screen);
   }
 
@@ -165,7 +203,7 @@ class HomepageTerminal extends HTMLElement {
     const fallback = this.querySelector<HTMLElement>(
       '[data-terminal-fallback]',
     );
-    const controls = this.querySelector<HTMLElement>(
+    const controls = this.querySelectorAll<HTMLElement>(
       '[data-terminal-controls]',
     );
     if (screen) {
@@ -173,7 +211,10 @@ class HomepageTerminal extends HTMLElement {
       screen.hidden = true;
     }
     if (fallback) fallback.hidden = false;
-    if (controls) controls.hidden = true;
+    for (const control of controls) control.hidden = true;
+    this.querySelector<HTMLElement>('[data-terminal-surface]')?.removeAttribute(
+      'style',
+    );
   }
 }
 

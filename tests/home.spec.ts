@@ -8,6 +8,16 @@ test.describe('without JavaScript', () => {
 
     await expect(page.getByRole('heading', { name: 'zhu-chen' })).toBeVisible();
     await expect(page.getByText('欢迎来到我的主页。')).toBeVisible();
+    await expect(page.locator('.wordmark')).toBeVisible();
+    await expect(
+      page.getByRole('navigation', { name: '主页内容' }).getByRole('link'),
+    ).toHaveCount(3);
+    await expect(
+      page.getByRole('heading', { name: '项目与论文', exact: true }),
+    ).toBeVisible();
+    await expect(page.locator('#projects')).toContainText(
+      '项目与论文内容正在整理中。',
+    );
     await expect(page.locator('[data-terminal-screen]')).toBeHidden();
     await expect(
       page.getByRole('textbox', { name: '命令', exact: true }),
@@ -46,7 +56,7 @@ test('terminal renders, fits the viewport and raises no runtime errors', async (
     fullPage: true,
   });
 
-  for (const width of [390, 360, 1024]) {
+  for (const width of [320, 390, 360, 1024]) {
     await page.setViewportSize({ width, height: 800 });
     await expect
       .poll(() =>

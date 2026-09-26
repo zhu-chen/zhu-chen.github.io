@@ -8,7 +8,6 @@ test('browse content with relative, absolute and home paths', () => {
     'README.txt',
     'about/',
     'projects/',
-    'publications/',
     'contact/',
   ]);
   shell.execute('cd about');

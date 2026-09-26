@@ -2,34 +2,100 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Terminal from '../components/Terminal.astro';
 import { sections } from '../data/homepage';
+
+const wordmark = [
+  '      _                  _',
+  ' ____| |__  _   _    ___| |__   ___ _ __',
+  "|_  /| '_ \\| | | |  / __| '_ \\ / _ \\ '_ \\",
+  ' / / | | | | |_| | | (__| | | |  __/ | | |',
+  '/___||_| |_|\\__,_|  \\___|_| |_|\\___|_| |_|',
+].join('\n');
 ---
 
 <BaseLayout title="zhu-chen | 个人主页">
-  <header class="intro">
-    <p class="eyebrow">~/</p>
-    <h1>zhu-chen</h1>
-    <p>个人学术主页 · 内容整理中</p>
-  </header>
-  <nav class="content-nav" aria-label="主页内容">
-    {sections.map((section) => (
-      <a href={`#${section.id}`}>{section.title}</a>
-    ))}
-  </nav>
-  <Terminal />
-  <div class="site-content">
-    {sections.map((section) => (
-      <section id={section.id} aria-labelledby={`${section.id}-title`}>
-        <p class="eyebrow">~/{section.id}</p>
-        <h2 id={`${section.id}-title`}>{section.title}</h2>
-        {section.lines.map((line) => (
-          <p>{line}</p>
+  <div class="workspace">
+    <div class="session-bar">
+      <span class="session-name">zhu-chen@homepage</span>
+      <span class="session-location">~ / home</span>
+      <a href="#contact" aria-label="跳转到联系与链接">
+        [ 联系 ]
+      </a>
+    </div>
+    <header class="intro">
+      <h1 class="sr-only">zhu-chen</h1>
+      <pre class="wordmark" aria-hidden="true">{wordmark}</pre>
+      <div class="intro-caption">
+        <p>
+          个人学术主页
+          <span class="intro-divider" aria-hidden="true">
+            {' '}
+            /{' '}
+          </span>
+          <span class="muted">内容整理中</span>
+        </p>
+        <p class="intro-hint">点击目录浏览，或在提示符后输入命令。</p>
+      </div>
+    </header>
+    <nav class="content-nav" aria-label="主页内容">
+      {sections.map((section, index) => (
+        <a href={'#' + section.id} aria-label={section.title}>
+          <span class="nav-index" aria-hidden="true">
+            [{index + 1}]
+          </span>
+          <span>{section.id}/</span>
+          <span class="nav-title">{section.title}</span>
+        </a>
+      ))}
+    </nav>
+    <div class="workspace-body">
+      <Terminal />
+      <div class="content-heading">
+        <span>~/</span>
+        <span>{sections.length} directories · 点击目录名定位内容</span>
+      </div>
+      <div class="site-content">
+        {sections.map((section, index) => (
+          <section
+            class="tui-panel"
+            id={section.id}
+            aria-labelledby={section.id + '-title'}
+          >
+            <div class="panel-heading">
+              <a
+                href={'#' + section.id}
+                class="panel-path"
+                aria-label={section.title + '目录'}
+              >
+                ~/{section.id}
+              </a>
+              <span class="panel-number" aria-hidden="true">
+                0{index + 1}
+              </span>
+            </div>
+            <div class="panel-content">
+              <p class="file-label">└─ README.txt</p>
+              <h2 id={section.id + '-title'}>{section.title}</h2>
+              {section.lines.map((line) => (
+                <p>{line}</p>
+              ))}
+              {section.links?.map((link) => (
+                <p class="content-link">
+                  <a href={link.href}>
+                    <span aria-hidden="true">[ </span>
+                    {link.label}
+                    <span aria-hidden="true"> ↗ ]</span>
+                  </a>
+                </p>
+              ))}
+            </div>
+          </section>
         ))}
-        {section.links?.map((link) => (
-          <p>
-            <a href={link.href}>{link.label}</a>
-          </p>
-        ))}
-      </section>
-    ))}
+      </div>
+    </div>
+    <footer class="status-bar">
+      <span class="status-label">[ zhu chen ]</span>
+      <span>个人学术主页</span>
+      <a href="#terminal-title">[ 返回终端 ↑ ]</a>
+    </footer>
   </div>
 </BaseLayout>

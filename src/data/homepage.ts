@@ -14,13 +14,8 @@ export const sections: ContentSection[] = [
   },
   {
     id: 'projects',
-    title: '项目',
-    lines: ['项目内容正在整理中。'],
-  },
-  {
-    id: 'publications',
-    title: '论文',
-    lines: ['论文内容正在整理中。'],
+    title: '项目与论文',
+    lines: ['项目与论文内容正在整理中。'],
   },
   {
     id: 'contact',
